@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="EMP-Infrastructure/EMP-Infrastructure.csproj" />
+  <Project Path="EMS-API/EMS-API.csproj" />
+  <Project Path="EMS-Core/EMS-Core.csproj" />
+</Solution>
