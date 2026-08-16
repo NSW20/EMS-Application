@@ -1,8 +1,23 @@
+using EMP_Infrastructure.SqlOperation;
+using EMS_Core.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddIdentity<AppUser, AppRole>().
+    AddEntityFrameworkStores<EMSDbContext>().
+    AddUserStore<UserStore<AppUser,AppRole,EMSDbContext,string>>()
+    .AddRoleStore<RoleStore<AppRole,EMSDbContext,string>>().AddDefaultTokenProviders();
+  
+builder.Services.AddDbContext<EMSDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
