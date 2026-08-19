@@ -7,7 +7,7 @@ namespace EMS_Core.ServiceContracts
 {
     public interface IDesignationService
     {
-        Task<IEnumerable<DesignationDTO>> GetAllDesignationAsync();
+        Task<IEnumerable<DesignationDTO>> GetAllDesignationAsync(CancellationToken token);
         Task<DesignationDTO> GetDesignationAsync(int id);
         Task<DesignationDTO> AddDesignation(DesignationAddDTO designationAddDTO);
 

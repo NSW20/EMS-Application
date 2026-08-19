@@ -36,10 +36,10 @@ namespace EMP_Infrastructure.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<Designation>> GetDesignationAsync()
+        public async Task<IEnumerable<Designation>> GetDesignationAsync(CancellationToken token)
         {
             logger.LogInformation("{method}.{class}.Requested receive to fetch all designation", nameof(GetDesignationAsync), nameof(DesignationRepository));
-            return await eMSDbContext.Designations.ToListAsync();
+            return await eMSDbContext.Designations.ToListAsync(token);
         }
 
         public async Task<Designation> GetDesignationByIdAsync(int id)

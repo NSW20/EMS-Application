@@ -65,16 +65,11 @@ namespace EMS_Core.Services
             return result;
         }
 
-        public async Task<IEnumerable<DesignationDTO>> GetAllDesignationAsync()
+        public async Task<IEnumerable<DesignationDTO>> GetAllDesignationAsync(CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested receive to fetch all designation", nameof(GetAllDesignationAsync), nameof(DesignationService));
-            var result = await _designationRepository.GetDesignationAsync();
-            if (result is null)
-            {
-                _logger.LogError("{method}.{class}.Something went wrong while fetching the designations", nameof(GetAllDesignationAsync), nameof(DesignationService));
-                throw new InvalidOperationException("Something went wrong while fetching the designations");
-            }
-           
+            var result = await _designationRepository.GetDesignationAsync(token);
+
             if (!result.Any())
             {
                 _logger.LogInformation("{method}.{class}.No designations found", nameof(GetAllDesignationAsync), nameof(DesignationService));
