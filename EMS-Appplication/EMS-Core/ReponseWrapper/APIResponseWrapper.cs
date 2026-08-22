@@ -9,7 +9,7 @@ namespace EMS_Core.ReponseWrapper
     {
         public int StatusCode { get; set; }
         public string? Message { get; set; }
-        public T Data { get; set; }
+        public T? Data { get; set; }
         public List<string>? Errors { get; set; }
 
         public static APIResponseWrapper<T> Ok(int statusCode,T data, string message = "Success")

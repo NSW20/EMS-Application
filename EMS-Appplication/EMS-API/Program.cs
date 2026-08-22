@@ -1,11 +1,14 @@
 using EMP_Infrastructure.Repositories;
 using EMP_Infrastructure.SqlOperation;
+using EMS_API.DTOValidations;
 using EMS_API.ExceptioHandling;
 using EMS_Core.Domain.Entities;
 using EMS_Core.Domain.RepositoryContract;
 using EMS_Core.Helpers;
 using EMS_Core.ServiceContracts;
 using EMS_Core.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.RateLimiting;
@@ -27,7 +30,8 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDesignationRepository, DesignationRepository>();
 builder.Services.AddScoped<IDesignationService, DesignationService>();
-
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<EMSDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -56,16 +60,17 @@ builder.Services.AddRateLimiter(options =>
         options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
 });
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<DesignationDTOValidation>();
+builder.Services.AddValidatorsFromAssemblyContaining<DesignationDTOUpdateValidation>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseGlobalExeceptionMiddleware();
 app.UseRateLimiter();
 app.UseHttpsRedirection();

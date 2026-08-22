@@ -23,7 +23,7 @@ namespace EMS_Core.Services
             this._logger = _logger;
             this._designationRepository = _designationRepository;
         }
-        public async Task<DesignationDTO> AddDesignation(DesignationAddDTO designationAddDTO)
+        public async Task<DesignationDTO> AddDesignation(DesignationAddDTO designationAddDTO, CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested receive to Add a designation", nameof(AddDesignation), nameof(DesignationService));
             if(designationAddDTO is null)
@@ -32,7 +32,7 @@ namespace EMS_Core.Services
                 throw new ArgumentNullException(nameof(designationAddDTO),"Please provide the required inputs");
             }
             var designation = _mapper.Map<Designation>(designationAddDTO);
-            var result=await _designationRepository.AddDesignationAsync(designation);
+            var result=await _designationRepository.AddDesignationAsync(designation, token);
             if (result is null)
             {
 
@@ -45,7 +45,7 @@ namespace EMS_Core.Services
             return resultToReturn;
         }
 
-        public async Task<bool> DeleteDesignationAsync(int designationId)
+        public async Task<bool> DeleteDesignationAsync(int designationId, CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested receive to delete a designation", nameof(DeleteDesignationAsync), nameof(DesignationService));
 
@@ -54,7 +54,7 @@ namespace EMS_Core.Services
                 _logger.LogWarning("{method}.{class}.Please enter correct designationId", nameof(DeleteDesignationAsync), nameof(DesignationService));
                 throw new ArgumentException("Please enter correct designationId", nameof(designationId));
             }
-            var result = await _designationRepository.DeleteDesignationAsync(designationId);
+            var result = await _designationRepository.DeleteDesignationAsync(designationId, token);
             if (!result)
             {
                 _logger.LogError("{method}.{class}.Something went wrong while deleting designation", nameof(DeleteDesignationAsync), nameof(DesignationService));
@@ -81,7 +81,7 @@ namespace EMS_Core.Services
             return resultToReturn;
         }
 
-        public async Task<DesignationDTO> GetDesignationAsync(int id)
+        public async Task<DesignationDTO> GetDesignationAsync(int id, CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested receive to fetch a designation", nameof(GetDesignationAsync), nameof(DesignationService));
             if (id <= 0)
@@ -89,7 +89,7 @@ namespace EMS_Core.Services
                 _logger.LogWarning("{method}.{class}.Please provide a correct designation id", nameof(GetDesignationAsync), nameof(DesignationService));
                 throw new ArgumentException("Please provide the correct input", nameof(id));
             }
-            var result = await _designationRepository.GetDesignationByIdAsync(id);
+            var result = await _designationRepository.GetDesignationByIdAsync(id, token);
             if(result is null)
             {
                 _logger.LogError("{method}.{class}.No designation found with id {id}", nameof(GetDesignationAsync), nameof(DesignationService),id);
@@ -100,7 +100,7 @@ namespace EMS_Core.Services
             return resultToBeReturned;
         }
 
-        public async Task<DesignationDTO> UpdateDesignation(DesignationDTO designationUpdateDTO, int designationId)
+        public async Task<DesignationDTO> UpdateDesignation(DesignationDTO designationUpdateDTO, int designationId, CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested receive to update a designation", nameof(UpdateDesignation), nameof(DesignationService));
             if (designationId <= 0)
@@ -114,7 +114,7 @@ namespace EMS_Core.Services
                 throw new ArgumentNullException(nameof(designationUpdateDTO), "Please provide the required inputs");
             }
             var designationToUpdate=_mapper.Map<Designation>(designationUpdateDTO);
-            var result = await _designationRepository.UpdateDesignationAsync(designationToUpdate, designationId);
+            var result = await _designationRepository.UpdateDesignationAsync(designationToUpdate, designationId, token);
             if(result is null)
             {
                 _logger.LogError("{method}.{class}.Something went wrong while updating designation", nameof(UpdateDesignation), nameof(DesignationService));

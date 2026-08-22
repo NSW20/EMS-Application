@@ -18,21 +18,21 @@ namespace EMP_Infrastructure.Repositories
             this.eMSDbContext = eMSDbContext;
             this.logger = logger;
         }
-        public async Task<Designation> AddDesignationAsync(Designation designation)
+        public async Task<Designation> AddDesignationAsync(Designation designation, CancellationToken token)
         {
             logger.LogInformation("{method}.{class}.Requested receive to Add a designation", nameof(AddDesignationAsync), nameof(DesignationRepository));
             await eMSDbContext.Designations.AddAsync(designation);
-            await eMSDbContext.SaveChangesAsync();
+            await eMSDbContext.SaveChangesAsync(token);
             return designation;
         }
 
-        public async Task<bool> DeleteDesignationAsync(int designationId)
+        public async Task<bool> DeleteDesignationAsync(int designationId, CancellationToken token)
         {
             logger.LogInformation("{method}.{class}.Requested receive to delete a designation", nameof(DeleteDesignationAsync), nameof(DesignationRepository));
             var desginationToDelete = await eMSDbContext.Designations.FirstOrDefaultAsync(x => x.DesignationId == designationId);
 
             eMSDbContext.Designations.Remove(desginationToDelete);
-            await eMSDbContext.SaveChangesAsync();
+            await eMSDbContext.SaveChangesAsync(token);
             return true;
         }
 
@@ -42,20 +42,20 @@ namespace EMP_Infrastructure.Repositories
             return await eMSDbContext.Designations.ToListAsync(token);
         }
 
-        public async Task<Designation> GetDesignationByIdAsync(int id)
+        public async Task<Designation> GetDesignationByIdAsync(int id, CancellationToken token)
         {
             logger.LogInformation("{method}.{class}.Requested receive to fetch a designation", nameof(GetDesignationByIdAsync), nameof(DesignationRepository));
-            var desgination = await eMSDbContext.Designations.FirstOrDefaultAsync(x => x.DesignationId == id);
+            var desgination = await eMSDbContext.Designations.FirstOrDefaultAsync(x => x.DesignationId == id,token);
             return desgination;
         }
 
-        public async Task<Designation> UpdateDesignationAsync(Designation designation, int designationId)
+        public async Task<Designation> UpdateDesignationAsync(Designation designation, int designationId, CancellationToken token)
         {
             logger.LogInformation("{method}.{class}.Requested receive to update a designation", nameof(UpdateDesignationAsync), nameof(DesignationRepository));
             var desginationToUpdate = await eMSDbContext.Designations.FirstOrDefaultAsync(x => x.DesignationId == designationId);
             desginationToUpdate.Title = designation.Title;
             eMSDbContext.Designations.Update(desginationToUpdate);
-            await eMSDbContext.SaveChangesAsync();
+            await eMSDbContext.SaveChangesAsync(token);
             return desginationToUpdate;
         }
     }
