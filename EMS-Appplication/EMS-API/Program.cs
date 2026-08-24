@@ -60,6 +60,15 @@ builder.Services.AddRateLimiter(options =>
         options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("enableCors", options =>
+    {
+        options.WithOrigins("http://localhost:4200");
+        options.AllowAnyMethod();
+        options.AllowAnyHeader();
+    });
+});
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<DesignationDTOValidation>();
 builder.Services.AddValidatorsFromAssemblyContaining<DesignationDTOUpdateValidation>();
@@ -69,12 +78,16 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseGlobalExeceptionMiddleware();
 app.UseSwagger();
 app.UseSwaggerUI();
-app.UseGlobalExeceptionMiddleware();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+    app.UseHsts();
+}
+app.UseCors("enableCors");
 app.UseRateLimiter();
-app.UseHttpsRedirection();
-app.UseHsts();
 app.UseAuthorization();
 app.MapControllers();
 

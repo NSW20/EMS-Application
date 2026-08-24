@@ -7,11 +7,11 @@ namespace EMS_Core.ServiceContracts
 {
     public interface IDepartmentService
     {
-        Task<IEnumerable<DepartmentDTO>> GetAllDepartmentAsync();
-        Task<DepartmentDTO> GetDepartmentAsync(int id);
-        Task<DepartmentDTO> AddDepartment(DepartmentAddDTO departmentAddDTO);
+        Task<IEnumerable<DepartmentDTO>> GetAllDepartmentAsync(CancellationToken token);
+        Task<DepartmentDTO> GetDepartmentAsync(int id, CancellationToken token);
+        Task<DepartmentDTO> AddDepartment(DepartmentAddDTO departmentAddDTO, CancellationToken token);
 
-        Task<DepartmentDTO> UpdateDepartment(DepartmentDTO departmentUpdateDTO,int deptId);
-        Task<bool> DeleteDepartmentAsync(int departmentId);
+        Task<DepartmentDTO> UpdateDepartment(DepartmentDTO departmentUpdateDTO,int deptId, CancellationToken token);
+        Task<bool> DeleteDepartmentAsync(int departmentId, CancellationToken token);
     }
 }

@@ -18,46 +18,46 @@ namespace EMP_Infrastructure.Repositories
             this._context = _context;
             this._logger = _logger;
         }
-        public async Task<Department> AddDepartmentAsync(Department department)
+        public async Task<Department> AddDepartmentAsync(Department department, CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested Recived to Add a department", nameof(AddDepartmentAsync), nameof(DepartmentRepository));
             await _context.Departments.AddAsync(department);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(token);
             return department;
         }
 
-        public async Task<bool> DeleteDepartmentAsync(int id)
+        public async Task<bool> DeleteDepartmentAsync(int id, CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested Recived to delete a department", nameof(DeleteDepartmentAsync), nameof(DepartmentRepository));
             var departmentToDelete= await _context.Departments.FirstOrDefaultAsync(x => x.DepartmentId == id);
             if(departmentToDelete != null)
             {
                  _context.Departments.Remove(departmentToDelete);
-                 await _context.SaveChangesAsync();
+                 await _context.SaveChangesAsync(token);
             }
             return true;
         }
 
-        public async Task<IEnumerable<Department>> GetAllDepartmentsAsync()
+        public async Task<IEnumerable<Department>> GetAllDepartmentsAsync(CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested Recived to fetch all the department", nameof(GetAllDepartmentsAsync), nameof(DepartmentRepository));
-            return await _context.Departments.ToListAsync();
+            return await _context.Departments.ToListAsync(token);
         }
 
-        public async Task<Department> GetDepartmentByIdAsync(int id)
+        public async Task<Department> GetDepartmentByIdAsync(int id, CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested Recived to fetch a department",nameof(GetDepartmentByIdAsync),nameof(DepartmentRepository));
-            return await _context.Departments.FirstOrDefaultAsync(x=>x.DepartmentId== id);
+            return await _context.Departments.FirstOrDefaultAsync(x=>x.DepartmentId== id,token);
         }
 
-        public async Task<Department> UpdateDepartmentAsync(Department department, int deptId)
+        public async Task<Department> UpdateDepartmentAsync(Department department, int deptId, CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested Recived to update a department", nameof(UpdateDepartmentAsync), nameof(DepartmentRepository));
              var departmentToUpdate = await _context.Departments.FirstOrDefaultAsync(x => x.DepartmentId == deptId);
             departmentToUpdate.Description=department.Description;
             departmentToUpdate.Name=department.Name;
              _context.Departments.Update(departmentToUpdate);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(token);
             return departmentToUpdate;
         }
     }
