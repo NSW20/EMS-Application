@@ -36,6 +36,8 @@ Small Employee Management System (EMS) — ASP.NET Core Web API solution.
 
 ## Tests
 - Run unit tests: `dotnet test EMS.Tests` or use Visual Studio __Test Explorer__.
+<img width="837" height="765" alt="image" src="https://github.com/user-attachments/assets/04c7a094-9680-4210-9149-dc604e149034" />
+
 
 ## Notes & next steps
 - Add API controllers and DTOs for Departments/Designations if not yet exposed as endpoints.
