@@ -2,4 +2,5 @@
   <Project Path="EMP-Infrastructure/EMP-Infrastructure.csproj" />
   <Project Path="EMS-API/EMS-API.csproj" />
   <Project Path="EMS-Core/EMS-Core.csproj" />
+  <Project Path="EMS.Tests/EMS.Tests.csproj" Id="7410dcc7-74a1-48e3-8cac-4c8cc1a2bdd6" />
 </Solution>
