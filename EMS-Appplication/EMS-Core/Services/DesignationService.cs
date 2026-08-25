@@ -58,7 +58,6 @@ namespace EMS_Core.Services
             if (!result)
             {
                 _logger.LogError("{method}.{class}.Something went wrong while deleting designation", nameof(DeleteDesignationAsync), nameof(DesignationService));
-                throw new InvalidOperationException("Something went wrong while deleting designation");
             }
             _logger.LogInformation("{method}.{class}.Designation Deleted successfully", nameof(DeleteDesignationAsync), nameof(DesignationService));
 

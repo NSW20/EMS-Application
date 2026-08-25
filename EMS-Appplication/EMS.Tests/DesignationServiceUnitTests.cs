@@ -103,5 +103,67 @@ namespace EMS.Tests
             result.Should().BeNull();
 
         }
+        [Fact]
+        public async Task UpdateDesignation_Valid()
+        {
+            int designationId = 1;
+            var entity = new Designation { DesignationId = 1, Title = "Manager", DepartmentId = 1 };
+            var dto = new DesignationDTO { Title = "Manager", DepartmentId = 1 };
+
+            _mockMapper.Setup(x => x.Map<Designation>(dto)).Returns(entity);
+            _mockRepo.Setup(x => x.UpdateDesignationAsync(entity, designationId, It.IsAny<CancellationToken>())).ReturnsAsync(entity);
+            _mockMapper.Setup(x => x.Map<DesignationDTO>(entity)).Returns(dto);
+
+            var result = await _service.UpdateDesignation(dto, designationId, CancellationToken.None);
+            result.Should().NotBeNull();
+            result.DepartmentId.Should().Be(1);
+            result.Title.Should().Be("Manager");
+        }
+        [Fact]
+        public async Task UpdateDesignation_Invalid()
+        {
+            int designationId = 1;
+            var entity = new Designation { DesignationId = 1, Title = "Manager", DepartmentId = 1 };
+            var dto = new DesignationDTO { Title = "Manager", DepartmentId = 1 };
+
+            _mockMapper.Setup(x => x.Map<Designation>(dto)).Returns(entity);
+            _mockRepo.Setup(x => x.UpdateDesignationAsync(entity, designationId, It.IsAny<CancellationToken>())).ReturnsAsync((Designation)null);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _service.UpdateDesignation(dto, designationId, CancellationToken.None));
+        }
+        [Fact]
+        public async Task UpdateDesignation_InvalidDesignationId()
+        {
+            int designationId = 0;
+            var entity = new Designation { DesignationId = 1, Title = "Manager", DepartmentId = 1 };
+            var dto = new DesignationDTO { Title = "Manager", DepartmentId = 1 };
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _service.UpdateDesignation(dto, designationId, CancellationToken.None));
+        }
+        [Fact]
+        public async Task UpdateDesignation_InvalidDesignationNull()
+        {
+            int designationId = 1;
+            var entity = new Designation { DesignationId = 1, Title = "Manager", DepartmentId = 1 };
+            var dto = new DesignationDTO { Title = "Manager", DepartmentId = 1 };
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _service.UpdateDesignation(null, designationId, CancellationToken.None));
+        }
+        [Fact]
+        public async Task DeleteDesignation_True()
+        {
+            int designationId = 1;
+            _mockRepo.Setup(x => x.DeleteDesignationAsync(designationId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            var result = await _service.DeleteDesignationAsync(designationId, CancellationToken.None);
+            result.Should().BeTrue();
+        }
+        [Fact]
+        public async Task DeleteDesignation_False()
+        {
+            int designationId = 1;
+            _mockRepo.Setup(x => x.DeleteDesignationAsync(designationId, It.IsAny<CancellationToken>())).ReturnsAsync(false);
+            var result = await _service.DeleteDesignationAsync(designationId, CancellationToken.None);
+            result.Should().BeFalse();
+        }
     }
 }
