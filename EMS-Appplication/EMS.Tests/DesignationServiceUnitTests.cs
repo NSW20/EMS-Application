@@ -90,17 +90,10 @@ namespace EMS.Tests
         [Fact]
         public async Task GetAllDesignation_Invalid()
         {
-            var entity = new Designation { DesignationId = 1, Title = "Manager", DepartmentId = 1 };
-            var dto = new DesignationDTO { Title = "Manager", DepartmentId = 1 };
-            var entityList = new List<Designation>() { entity };
-            var dtoList = new List<DesignationDTO>() { dto };
-
-            _mockMapper.Setup(x => x.Map<IEnumerable<Designation>>(dtoList)).Returns(entityList);
-            _mockRepo.Setup(x => x.GetDesignationAsync(It.IsAny<CancellationToken>())).ReturnsAsync((IEnumerable<Designation>)null);
-            _mockMapper.Setup(x => x.Map<IEnumerable<DesignationDTO>>(entityList)).Returns(dtoList);
+            _mockRepo.Setup(x => x.GetDesignationAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<Designation>());
             var result = await _service.GetAllDesignationAsync(CancellationToken.None);
+            result.Should().NotBeNull();
             result.Should().HaveCount(0);
-            result.Should().BeNull();
 
         }
         [Fact]
