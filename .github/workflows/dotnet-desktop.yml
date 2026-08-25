@@ -15,10 +15,10 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Solution_Name: EMS-Appplication.sln
-      Test_Project_Path: EMS.Tests/EMS.Tests.csproj   # ✅ correct relative path
-      Wap_Project_Directory: EMS-API                  # ✅ startup project
-      Wap_Project_Path: EMS-API/EMS-API.wapproj       # ❌ only if you actually have a .wapproj file
+      Solution_Name: EMS-Appplication/EMS-Appplication.slnx
+      Test_Project_Path: EMS-Appplication/EMS.Tests/EMS.Tests.csproj  # ✅ correct relative path
+      Wap_Project_Directory: EMS-Appplication/EMS-API                # ✅ startup project
+      Wap_Project_Path: EMS-Appplication/EMS-API/EMS-API.wapproj      # ❌ only if you actually have a .wapproj file
 
     steps:
     - name: Checkout
