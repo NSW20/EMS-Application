@@ -10,7 +10,7 @@ using Serilog.Core;
 
 namespace EMS_API.Controllers
 {
-    [Route("api/V{version:apiVersion}/[controller]/[action]")]
+    [Route("api/v{version:apiVersion}/[controller]/[action]")]
     [ApiController]
     [ApiVersion("1.0")]
     public class DesignationController : ControllerBase
