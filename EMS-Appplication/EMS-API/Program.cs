@@ -9,11 +9,14 @@ using EMS_Core.ServiceContracts;
 using EMS_Core.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +28,25 @@ builder.Services.AddIdentity<AppUser, AppRole>().
     AddEntityFrameworkStores<EMSDbContext>().
     AddUserStore<UserStore<AppUser,AppRole,EMSDbContext,string>>()
     .AddRoleStore<RoleStore<AppRole,EMSDbContext,string>>().AddDefaultTokenProviders();
-
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(option =>
+{
+    var tokenDetails = builder.Configuration.GetSection("JwtConfig");
+    option.RequireHttpsMetadata = true;
+    option.SaveToken = true;
+    option.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidIssuer = tokenDetails["issuer"],
+        ValidAudience = tokenDetails["audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenDetails["key"])),
+    };
+});
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDesignationRepository, DesignationRepository>();
@@ -69,10 +90,12 @@ builder.Services.AddCors(options =>
         options.AllowAnyHeader();
     });
 });
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<DesignationDTOValidation>();
 builder.Services.AddValidatorsFromAssemblyContaining<DesignationDTOUpdateValidation>();
-
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterDTOValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginDTOValidator>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 var app = builder.Build();
@@ -88,6 +111,7 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseCors("enableCors");
 app.UseRateLimiter();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

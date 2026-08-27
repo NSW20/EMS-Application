@@ -54,6 +54,7 @@ namespace EMP_Infrastructure.Repositories
             logger.LogInformation("{method}.{class}.Requested receive to update a designation", nameof(UpdateDesignationAsync), nameof(DesignationRepository));
             var desginationToUpdate = await eMSDbContext.Designations.FirstOrDefaultAsync(x => x.DesignationId == designationId);
             desginationToUpdate.Title = designation.Title;
+            desginationToUpdate.DepartmentId = designation.DepartmentId;
             eMSDbContext.Designations.Update(desginationToUpdate);
             await eMSDbContext.SaveChangesAsync(token);
             return desginationToUpdate;

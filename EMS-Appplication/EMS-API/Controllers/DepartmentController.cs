@@ -2,6 +2,7 @@
 using EMS_Core.DTOs;
 using EMS_Core.ReponseWrapper;
 using EMS_Core.ServiceContracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -27,6 +28,7 @@ namespace EMS_API.Controllers
 
         [HttpGet]
         [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles ="Admin")]
         public async Task<APIResponseWrapper<IEnumerable<DepartmentDTO>>> GetAllDepartment(CancellationToken token)
         {
             _logger.LogInformation("{controller}.{method}.{message}", nameof(DepartmentController), nameof(GetAllDepartment), "Request received to fetch all the departments");
@@ -63,6 +65,7 @@ namespace EMS_API.Controllers
         }
         [HttpGet]
         [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
         public async Task<APIResponseWrapper<DepartmentDTO>> GetADepartment([FromQuery] int deptId,CancellationToken token)
         {
             _logger.LogInformation("{controller}.{method}.{message}", nameof(DepartmentController), nameof(GetADepartment), "Request received to fetch a department");
@@ -99,6 +102,7 @@ namespace EMS_API.Controllers
         }
         [HttpPost]
         [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
         public async Task<APIResponseWrapper<DepartmentDTO>> AddNewDepartment([FromBody] DepartmentAddDTO departmentAdd,CancellationToken token)
         {
             _logger.LogInformation("{controller}.{method}.{message}", nameof(DepartmentController), nameof(AddNewDepartment), "Request received to add new departments");
@@ -129,6 +133,7 @@ namespace EMS_API.Controllers
         }
         [HttpPut]
         [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
         public async Task<APIResponseWrapper<DepartmentDTO>> UpdateDepartment([FromBody] DepartmentDTO departmentUpdate,[FromQuery]int deptId, CancellationToken token)
         {
             _logger.LogInformation("{controller}.{method}.{message}", nameof(DepartmentController), nameof(UpdateDepartment), "Request received to update a department");
@@ -159,6 +164,7 @@ namespace EMS_API.Controllers
         }
         [HttpDelete]
         [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
         public async Task<APIResponseWrapper<string>> DeleteDepartment([FromQuery] int deptId,CancellationToken token)
         {
             _logger.LogInformation("{controller}.{method}.{message}", nameof(DepartmentController), nameof(DeleteDepartment), "Request received to remove a department");

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ClosedXML;
 
 namespace EMS_Core.Services
 {
@@ -54,6 +55,8 @@ namespace EMS_Core.Services
             _logger.LogInformation("{method}.{class}.Department has been deleted successfully", nameof(DeleteDepartmentAsync), nameof(DepartmentService));
             return result;
         }
+
+
 
         public async Task<IEnumerable<DepartmentDTO>> GetAllDepartmentAsync(CancellationToken token)
         {
@@ -114,5 +117,6 @@ namespace EMS_Core.Services
             return resultUpdate;
 
         }
+
     }
 }

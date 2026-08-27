@@ -13,5 +13,6 @@ namespace EMS_Core.ServiceContracts
 
         Task<DepartmentDTO> UpdateDepartment(DepartmentDTO departmentUpdateDTO,int deptId, CancellationToken token);
         Task<bool> DeleteDepartmentAsync(int departmentId, CancellationToken token);
+ 
     }
 }

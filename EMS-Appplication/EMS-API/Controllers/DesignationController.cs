@@ -1,6 +1,7 @@
 ﻿using EMS_Core.DTOs;
 using EMS_Core.ReponseWrapper;
 using EMS_Core.ServiceContracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ namespace EMS_API.Controllers
 
         [HttpGet]
         [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
         public async Task<APIResponseWrapper<IEnumerable<DesignationDTO>>> GetAllDesignations(CancellationToken token)
         {
             _logger.LogInformation("{Method}.{controller}.{message}",
@@ -57,6 +59,7 @@ namespace EMS_API.Controllers
         }
         [HttpGet]
         [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
         public async Task<APIResponseWrapper<DesignationDTO>> GetADesignation([FromQuery] int designationId, CancellationToken token)
         {
             _logger.LogInformation("{Method}.{controller}.{message}",
@@ -79,6 +82,7 @@ namespace EMS_API.Controllers
 
         [HttpPost]
         [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
         public async Task<APIResponseWrapper<DesignationDTO>> AddDesignation([FromBody] DesignationAddDTO designationAddDTO, CancellationToken token)
         {
             memoryCache.Remove("cacheDesignations");
@@ -110,6 +114,7 @@ namespace EMS_API.Controllers
         }
         [HttpPut]
         [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
         public async Task<APIResponseWrapper<DesignationDTO>> UpdateDesignation([FromBody] DesignationDTO designationUpdateDTO, [FromQuery] int designationId, CancellationToken token)
         {
             memoryCache.Remove("cacheDesignations");
@@ -140,6 +145,8 @@ namespace EMS_API.Controllers
             }
         }
         [HttpDelete]
+        [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
         public async Task<APIResponseWrapper<string>> DeleteDesignation([FromQuery] int designationId, CancellationToken token)
         {
             memoryCache.Remove("cacheDesignations");

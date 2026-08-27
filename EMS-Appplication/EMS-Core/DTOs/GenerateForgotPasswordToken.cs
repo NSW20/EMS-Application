@@ -4,9 +4,8 @@ using System.Text;
 
 namespace EMS_Core.DTOs
 {
-    public class LoginDTO
+    public class GenerateForgotPasswordToken
     {
         public string? Email { get; set; }
-        public string? Password { get; set; }
     }
 }
