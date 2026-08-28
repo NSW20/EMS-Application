@@ -63,20 +63,21 @@ namespace EMS_API.Controllers
                 }
                 await _userManager.AddToRoleAsync(user, userRole.Name);
              
-                return new APIResponseWrapper<string>()
+                return StatusCode(StatusCodes.Status200OK,new APIResponseWrapper<string>()
                 {
                     Data = null,
                     Message = "User has been added successfully.",
                     StatusCode = StatusCodes.Status200OK
-                };
+                });
             }
-            return  new APIResponseWrapper<string>()
+            return  StatusCode(StatusCodes.Status400BadRequest,new APIResponseWrapper<string>()
             {
                 Data = null,
                 Message = "Registration failed.Please try again later..",
                 StatusCode = StatusCodes.Status400BadRequest
-            };
+            });
         }
+
         [HttpPost]
         public async Task<ActionResult<APIResponseWrapper<string>>> LoginUser([FromBody]LoginDTO login)
         {
@@ -102,85 +103,85 @@ namespace EMS_API.Controllers
                     }
                     var token = JWTAuthTokenGenerator.GenerateToken(cliams,_jwtConfig);
                     _logger.LogInformation("{controller}.{method}.{message}", nameof(AuthController), nameof(LoginUser), $"{userExists.Name} logged in successfully.");
-                    return new APIResponseWrapper<string>()
+                    return StatusCode(StatusCodes.Status200OK, new APIResponseWrapper<string>
                     {
                         Data = token,
                         Message = "User has been logged successfully.",
                         StatusCode = StatusCodes.Status200OK
-                    };
+                    });
 
                 }
             }
-            return new APIResponseWrapper<string>()
+            return StatusCode(StatusCodes.Status400BadRequest, new APIResponseWrapper<string>
             {
                 Data = null,
                 Message = "Invalid email or password",
                 StatusCode = StatusCodes.Status400BadRequest
-            };
+            });
 
         }
 
         [HttpPost]
-        [Authorize]
+    
         public async Task<ActionResult<APIResponseWrapper<string>>> ForgotPassword([FromBody] GenerateForgotPasswordToken token)
         {
             _logger.LogInformation("{controller}.{method}.{message}", nameof(AuthController), nameof(ForgotPassword), "Forgot password request has been received.");
             var user = await _userManager.FindByEmailAsync(token.Email);
             if(user==null)
-                return new APIResponseWrapper<string>()
+                return StatusCode(StatusCodes.Status400BadRequest, new APIResponseWrapper<string>
                 {
                     Data = null,
                     Message = "User does not exists.",
                     StatusCode = StatusCodes.Status400BadRequest
-                };
+                });
             else
             {
                 var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
                 _logger.LogInformation("{controller}.{method}.{message}", nameof(AuthController), nameof(ForgotPassword), "Forgot password token has beend generated successfully.");
-                return new APIResponseWrapper<string>()
+                return StatusCode(StatusCodes.Status200OK,new APIResponseWrapper<string>
                 {
                     Data = resetToken,
                     Message = "User does not exists.",
                     StatusCode = StatusCodes.Status200OK
-                };
+                });
             }
         }
 
         [HttpPost]
-        [Authorize]
+       
         public async Task<ActionResult<APIResponseWrapper<string>>> ResetPassword([FromBody] ResetPasswordDTO resetPassword)
         {
             _logger.LogInformation("{controller}.{method}.{message}", nameof(AuthController), nameof(ResetPassword), "Password reset request has been received.");
             var user = await _userManager.FindByEmailAsync(resetPassword.Email);
             if (user == null)
             {
-                return new APIResponseWrapper<string>()
+                return StatusCode(StatusCodes.Status400BadRequest,new APIResponseWrapper<string>()
                 {
                     Data = null,
                     Message = "User does not exists.",
                     StatusCode = StatusCodes.Status400BadRequest
-                };
+                });
             }
             var result=await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.NewPassword);
             if (result.Succeeded)
             {
                 _logger.LogInformation("{controller}.{method}.{message}", nameof(AuthController), nameof(ResetPassword), "Password has been changed successfully.");
-                return new APIResponseWrapper<string>()
+                return StatusCode(StatusCodes.Status200OK,new APIResponseWrapper<string>()
                 {
                     Data = null,
                     Message = "Password has been updated successfully.",
                     StatusCode = StatusCodes.Status200OK
-                };
+                });
             }
             else
             {
                 _logger.LogError("{controller}.{method}.{message}", nameof(AuthController), nameof(ResetPassword), "Some error occured while updating password.");
-                return new APIResponseWrapper<string>()
+                return StatusCode(StatusCodes.Status400BadRequest,new APIResponseWrapper<string>()
                 {
                     Data = null,
                     Message = "Some error occured while updating password",
                     StatusCode = StatusCodes.Status400BadRequest
-                };
+                });
             }
         }
     }
