@@ -98,6 +98,12 @@ builder.Services.AddValidatorsFromAssemblyContaining<DesignationDTOValidation>()
 builder.Services.AddValidatorsFromAssemblyContaining<DesignationDTOUpdateValidation>();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterDTOValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<LoginDTOValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<EmployeeDTOValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<EmployeeAddDTOValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<LeaveAddDTOValidators>();
+builder.Services.AddValidatorsFromAssemblyContaining<LeaveDTOValidators>();
+builder.Services.AddValidatorsFromAssemblyContaining<AttendaceAddDTOValidations>();
+builder.Services.AddValidatorsFromAssemblyContaining<AttendaceDTOValidations>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 var app = builder.Build();

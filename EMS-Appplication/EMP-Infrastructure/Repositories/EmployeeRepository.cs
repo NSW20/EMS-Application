@@ -55,6 +55,7 @@ namespace EMP_Infrastructure.Repositories
             employeeToBeUpdated.DepartmentId = employee.DepartmentId;
             employeeToBeUpdated.FullName = employee.FullName;
             employeeToBeUpdated.DateOfJoining = employee.DateOfJoining;
+            employeeToBeUpdated.Status = employee.Status;
             eMSDbContext.Employees.Update(employeeToBeUpdated);
             await eMSDbContext.SaveChangesAsync(token);
             return employeeToBeUpdated;
