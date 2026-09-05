@@ -13,5 +13,6 @@ namespace EMS_Core.ServiceContracts
         Task<EmployeeDTO> AddEmployee(EmployeeAddDTO employee, CancellationToken token);
         Task<EmployeeDTO> UpdateEmployee(EmployeeDTO employee, CancellationToken token);
         Task<bool> DeleteEmployee(int empId, CancellationToken token);
+        Task<AppUser> GetUser(string userId);
     }
 }

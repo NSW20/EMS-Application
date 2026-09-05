@@ -13,5 +13,6 @@ namespace EMS_Core.Domain.RepositoryContract
         Task<Employee> AddEmployee(Employee employee, CancellationToken token);
         Task<Employee> UpdateEmployee(Employee employee, CancellationToken token);
         Task<bool> DeleteEmployee(int empId, CancellationToken token);
+        Task<AppUser> GetUser(string userId);
     }
 }

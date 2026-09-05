@@ -4,6 +4,7 @@ using EMS_Core.Domain.RepositoryContract;
 using EMS_Core.DTOs;
 using EMS_Core.ServiceContracts;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -117,6 +118,26 @@ namespace EMS_Core.Services
             }
             var employeeDTO = _mapper.Map<EmployeeDTO>(result);
             return employeeDTO;
+        }
+        public async Task<AppUser> GetUser(string userId)
+        {
+            _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUser), "Find user details");
+            if (userId is null)
+            {
+                _logger.LogError("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUser), "Please enter a valid user Id");
+                throw new ArgumentException("Please enter a valid employee Id", nameof(userId));
+            }
+            var result = await employeeRepository.GetUser(userId);
+            if (result==null)
+            {
+                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUser), "No records found");
+                return new AppUser();
+            }
+            else
+            {
+                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUser), "User details has been fetched successfully");
+                return result;
+            }
         }
     }
 }

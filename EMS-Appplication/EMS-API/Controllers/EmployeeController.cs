@@ -172,5 +172,32 @@ namespace EMS_API.Controllers
 
             });
         }
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [EnableRateLimiting("rateLimiter")]
+        public async Task<ActionResult<APIResponseWrapper<AppUser>>> GetUserDetails([FromQuery] string email)
+        {
+            _logger.LogInformation("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(GetUserDetails), "Request received to fetch user details");
+            var result = await employeeService.GetUser(email);
+            if (result == null)
+            {
+                _logger.LogError("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(GetUserDetails), "Some Error occured while fetching user details");
+                return StatusCode(StatusCodes.Status400BadRequest, new APIResponseWrapper<AppUser>()
+                {
+                    Data = null,
+                    Message = "Some Error occured while fetching user details",
+                    StatusCode = 400
+                });
+            }
+            _logger.LogInformation("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(GetUserDetails), "User details has been fetched successfully.");
+
+            return StatusCode(StatusCodes.Status200OK, new APIResponseWrapper<AppUser>()
+            {
+                Data = result,
+                Message = "User details has been fetched successfully.",
+                StatusCode = 200
+            });
+        }
+
     }
 }
