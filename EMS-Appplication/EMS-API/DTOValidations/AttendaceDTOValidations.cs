@@ -8,7 +8,6 @@ namespace EMS_API.DTOValidations
         public AttendaceDTOValidations()
         {
             RuleFor(x => x.CheckIn).NotEmpty().WithMessage("Please provide the checkin time");
-            RuleFor(x => x.CheckOut).NotEmpty().WithMessage("Please provide the checkout time");
             RuleFor(x => x.EmployeeId).NotEmpty().WithMessage("Please provide the employee id");
             RuleFor(x => x.AttendanceId).NotEmpty().WithMessage("Please provide the attendace id");
         }
@@ -17,8 +16,6 @@ namespace EMS_API.DTOValidations
     {
         public AttendaceAddDTOValidations()
         {
-            RuleFor(x => x.CheckIn).NotEmpty().WithMessage("Please provide the checkin time");
-            RuleFor(x => x.CheckOut).NotEmpty().WithMessage("Please provide the checkout time");
             RuleFor(x => x.EmployeeId).NotEmpty().WithMessage("Please provide the employee id");
         }
     }

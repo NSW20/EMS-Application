@@ -69,7 +69,6 @@ namespace EMP_Infrastructure.Repositories
             {
                 return null;
             }
-            attendanceToBeUpdated.CheckIn = attendance.CheckIn;
             attendanceToBeUpdated.CheckOut = attendance.CheckOut;
             attendanceToBeUpdated.Status = attendance.Status;
             _context.Attendances.Update(attendanceToBeUpdated);

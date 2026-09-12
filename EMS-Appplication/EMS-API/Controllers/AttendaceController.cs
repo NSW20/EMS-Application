@@ -25,7 +25,7 @@ namespace EMS_API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [EnableRateLimiting("rateLimiter")]
         public async Task<ActionResult<APIResponseWrapper<IEnumerable<AttendanceDTO>>>> GetAllAttendace(CancellationToken token)
         {

@@ -64,13 +64,13 @@ namespace EMS_API.Controllers
             }
             
         }
-        [HttpGet]
+        [HttpPost]
         [Authorize(Roles = "Admin,Employee")]
         [EnableRateLimiting("rateLimiter")]
-        public async Task<ActionResult<APIResponseWrapper<EmployeeDTO>>> FindEmployeeById([FromQuery] int empId,CancellationToken token)
+        public async Task<ActionResult<APIResponseWrapper<EmployeeDTO>>> FindEmployeeById([FromBody] UserDetailsDTO userId , CancellationToken token)
         {
             _logger.LogInformation("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(FindEmployeeById), "Request received to fetch employee by Id");
-            var result = await employeeService.GetEmployeeById(token, empId);
+            var result = await employeeService.GetEmployeeByEmail(token, userId.UserId);
             if(result is null)
             {
                 _logger.LogInformation("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(FindEmployeeById), "Employee does not exists.Please check the employee Id");
@@ -175,10 +175,10 @@ namespace EMS_API.Controllers
         [HttpGet]
         [Authorize(Roles = "Admin")]
         [EnableRateLimiting("rateLimiter")]
-        public async Task<ActionResult<APIResponseWrapper<AppUser>>> GetUserDetails([FromQuery] string email)
+        public async Task<ActionResult<APIResponseWrapper<AppUser>>> GetUserDetails([FromQuery] string userId)
         {
             _logger.LogInformation("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(GetUserDetails), "Request received to fetch user details");
-            var result = await employeeService.GetUser(email);
+            var result = await employeeService.GetUser(userId);
             if (result == null)
             {
                 _logger.LogError("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(GetUserDetails), "Some Error occured while fetching user details");
@@ -198,6 +198,33 @@ namespace EMS_API.Controllers
                 StatusCode = 200
             });
         }
+        [HttpGet]
+        [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<APIResponseWrapper<IEnumerable<AppUser>>>> GetAllUsersDetails()
+        {
+            _logger.LogInformation("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(GetAllUsersDetails), "Request received to fetch user details");
+            var result = await employeeService.GetAllUsers();
+            if (result == null)
+            {
+                _logger.LogError("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(GetAllUsersDetails), "Some Error occured while fetching user details");
+                return StatusCode(StatusCodes.Status400BadRequest, new APIResponseWrapper<IEnumerable<AppUser>>()
+                {
+                    Data = null,
+                    Message = "Some Error occured while fetching user details",
+                    StatusCode = 400
+                });
+            }
+            _logger.LogInformation("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(GetAllUsersDetails), "User details has been fetched successfully.");
+
+            return StatusCode(StatusCodes.Status200OK, new APIResponseWrapper<IEnumerable<AppUser>>()
+            {
+                Data = result,
+                Message = "User details has been fetched successfully.",
+                StatusCode = 200
+            });
+        }
+
 
     }
 }

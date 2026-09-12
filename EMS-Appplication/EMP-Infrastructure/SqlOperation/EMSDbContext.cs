@@ -1,4 +1,5 @@
 ﻿using EMS_Core.Domain.Entities;
+using EMS_Core.Enums;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -63,9 +64,9 @@ namespace EMP_Infrastructure.SqlOperation
             var att = builder.Entity<Attendance>();
             att.HasKey(x => x.AttendanceId);
             att.Property(x => x.AttendanceId).ValueGeneratedOnAdd();
-            att.Property(x => x.Date).HasColumnType("date");
-            att.Property(x => x.Status).HasMaxLength(20);
-            att.Property(x => x.CheckIn).HasColumnType("time");
+            att.Property(x => x.Date).HasColumnType("date").HasDefaultValueSql("GetDate()");
+            att.Property(x => x.Status).HasMaxLength(20).HasDefaultValue(AttendenceStatus.Present);
+            att.Property(x => x.CheckIn).HasColumnType("time").HasDefaultValueSql("CAST(GETDATE() AS TIME)");
             att.Property(x => x.CheckOut).HasColumnType("time");
             att.HasIndex(x => x.EmployeeId);
             att.HasOne(x => x.Employee).WithMany(x => x.Attendances).

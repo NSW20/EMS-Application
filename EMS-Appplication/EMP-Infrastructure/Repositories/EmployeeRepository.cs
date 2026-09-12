@@ -1,4 +1,5 @@
-﻿using EMP_Infrastructure.SqlOperation;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using EMP_Infrastructure.SqlOperation;
 using EMS_Core.Domain.Entities;
 using EMS_Core.Domain.RepositoryContract;
 using EMS_Core.DTOs;
@@ -31,10 +32,10 @@ namespace EMP_Infrastructure.Repositories
             return true;
         }
 
-        public async Task<Employee> GetAEmployee(CancellationToken token, int empId)
+        public async Task<Employee> GetAEmployee(CancellationToken token, string email)
         {
             _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeRepository), nameof(GetAEmployee), "Get a employee");
-            var employee= await eMSDbContext.Employees.FirstOrDefaultAsync(x => x.EmployeeId == empId,token);
+            var employee= await eMSDbContext.Employees.FirstOrDefaultAsync(x => x.UserId == email, token);
             return employee;
         }
 
@@ -56,6 +57,7 @@ namespace EMP_Infrastructure.Repositories
             employeeToBeUpdated.FullName = employee.FullName;
             employeeToBeUpdated.DateOfJoining = employee.DateOfJoining;
             employeeToBeUpdated.Status = employee.Status;
+            employeeToBeUpdated.Salary = employee.Salary;
             eMSDbContext.Employees.Update(employeeToBeUpdated);
             await eMSDbContext.SaveChangesAsync(token);
             return employeeToBeUpdated;
@@ -71,7 +73,13 @@ namespace EMP_Infrastructure.Repositories
         public async Task<AppUser> GetUser(string userId)
         {
             _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeRepository), nameof(GetUser), "FindUserId");
-            var result=await eMSDbContext.Users.FirstOrDefaultAsync(x => x.Email == userId);
+            var result=await eMSDbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            return result;
+        }
+        public async Task<IEnumerable<AppUser>> GetAllUsers()
+        {
+            _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeRepository), nameof(GetAllUsers), "Get All Users");
+            var result = await eMSDbContext.Users.ToListAsync();
             return result;
         }
     }

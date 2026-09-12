@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using EMS_Core.Domain.Entities;
 using EMS_Core.Domain.RepositoryContract;
 using EMS_Core.DTOs;
@@ -60,24 +61,24 @@ namespace EMS_Core.Services
             return false;
         }
 
-        public async Task<EmployeeDTO> GetEmployeeById(CancellationToken token, int empId)
+        public async Task<EmployeeDTO> GetEmployeeByEmail(CancellationToken token, string email)
         {
 
-            _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetEmployeeById), "Find a Employee by employee id");
-            if (empId <= 0)
+            _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetEmployeeByEmail), "Find a Employee by employee id");
+            if (string.IsNullOrEmpty(email))
             {
-                _logger.LogError("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetEmployeeById), "Please enter a valid employee Id");
-                throw new ArgumentException("Please enter a valid employee Id", nameof(empId));
+                _logger.LogError("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetEmployeeByEmail), "Please enter a valid employee Id");
+                throw new ArgumentException("Please enter a valid employee Id", nameof(email));
             }
-            var fetchedEmployee = await employeeRepository.GetAEmployee (token,empId);
+            var fetchedEmployee = await employeeRepository.GetAEmployee (token, email);
             if (fetchedEmployee is null)
             {
-                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetEmployeeById), "Employee doesn't exists");
+                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetEmployeeByEmail), "Employee doesn't exists");
                 return null;
             }
             else
             {
-                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetEmployeeById), "Employee has been fetched successfully");
+                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetEmployeeByEmail), "Employee has been fetched successfully");
                 var result = _mapper.Map<EmployeeDTO>(fetchedEmployee);
                 return result;
             }
@@ -132,6 +133,22 @@ namespace EMS_Core.Services
             {
                 _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUser), "No records found");
                 return new AppUser();
+            }
+            else
+            {
+                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUser), "User details has been fetched successfully");
+                return result;
+            }
+        }
+        public async Task<IEnumerable<AppUser>> GetAllUsers()
+        {
+            _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetAllUsers), "Get All Users Details");
+          
+            var result = await employeeRepository.GetAllUsers();
+            if (!result.Any())
+            {
+                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetAllUsers), "No records found");
+                return Enumerable.Empty<AppUser>();
             }
             else
             {
