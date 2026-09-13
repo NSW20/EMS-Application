@@ -75,5 +75,17 @@ namespace EMP_Infrastructure.Repositories
             await _context.SaveChangesAsync(token);
             return attendanceToBeUpdated;
         }
+        public async Task<IEnumerable<Attendance>> GetAllAttendanceForAnEmployee(int empId, CancellationToken token)
+        {
+            _logger.LogInformation("{method}.{class}.{message}", nameof(GetAllAttendanceForAnEmployee), nameof(AttendanceRepository), "Request Recieved to get all attendance record");
+            var result = await _context.Attendances.Where(x => x.EmployeeId == empId).AsNoTracking().ToListAsync(token);
+            return result;
+        }
+        public async Task<bool> CheckIfCheckedInDone(DateTime? date, int empId, CancellationToken token)
+        {
+            _logger.LogInformation("{method}.{class}.{message}", nameof(CheckIfCheckedInDone), nameof(AttendanceRepository), "Request Recieved to current day checkedIn Record");
+            var result = await _context.Attendances.AnyAsync(x => x.Date == date && x.EmployeeId==empId,token);
+            return result;
+        }
     }
 }

@@ -13,5 +13,8 @@ namespace EMS_Core.ServiceContracts
         Task<AttendanceDTO> ApplyAttendanceAsync(AttendanceAddDTO attendace, CancellationToken token);
         Task<AttendanceDTO> UpdateAttendanceAsync(AttendanceDTO attendace, int attendaceId, CancellationToken token);
         Task<bool> DeleteAttendanceAsync(int id, CancellationToken token);
+        Task<IEnumerable<AttendanceDTO>> GetAllAttendanceForAnEmployee(int empId, CancellationToken token);
+        Task<bool> CheckIfCheckedInDone(DateTime? date, int empId, CancellationToken token);
+
     }
 }

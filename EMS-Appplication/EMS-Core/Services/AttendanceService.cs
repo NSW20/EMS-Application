@@ -116,5 +116,41 @@ namespace EMS_Core.Services
             _logger.LogInformation("{method}.{class}.{message}", nameof(UpdateAttendanceAsync), nameof(AttendanceService), "Attendace has been updated successfully.");
             return _mapper.Map<AttendanceDTO>(result);
         }
+        public async Task<IEnumerable<AttendanceDTO>> GetAllAttendanceForAnEmployee(int empId, CancellationToken token)
+        {
+            _logger.LogInformation("{method}.{class}.{message}", nameof(GetAllAttendanceForAnEmployee), nameof(AttendanceService), "Request Recieved to get all attendance records");
+            if (empId <= 0)
+            {
+                _logger.LogError("{method}.{class}.{message}", nameof(GetAllAttendanceForAnEmployee), nameof(AttendanceService), "Please provide valid input");
+                throw new ArgumentException("Please provide valid employeeId",nameof(empId));
+            }
+            var result = await _attendaceRepository.GetAllAttendanceForAnEmployee(empId, token);
+            if (!result.Any())
+            {
+                _logger.LogInformation("{method}.{class}.{message}", nameof(GetAllAttendanceForAnEmployee), nameof(AttendanceService), "No records found.");
+                return Enumerable.Empty<AttendanceDTO>();
+            }
+            return _mapper.Map<IEnumerable<AttendanceDTO>>(result);
+        }
+        public async Task<bool> CheckIfCheckedInDone(DateTime? date, int empId, CancellationToken token)
+        {
+            _logger.LogInformation("{method}.{class}.{message}", nameof(CheckIfCheckedInDone), nameof(AttendanceService), "Request Recieved to current day checkedIn Record");
+            if (empId <= 0)
+            {
+                _logger.LogInformation("{method}.{class}.{message}", nameof(CheckIfCheckedInDone), nameof(AttendanceService), "Please enter your Id");
+                throw new ArgumentException("Please enter your Id", nameof(empId));
+            }
+            if (date is null)
+            {
+                _logger.LogInformation("{method}.{class}.{message}", nameof(CheckIfCheckedInDone), nameof(AttendanceService), "Please enter valid date");
+                throw new ArgumentNullException(nameof(date),"Please enter valid date");
+            }
+            var result = await _attendaceRepository.CheckIfCheckedInDone(date.Value.Date, empId, token);
+            if (result)
+             _logger.LogInformation("{method}.{class}.{message}", nameof(CheckIfCheckedInDone), nameof(AttendanceService), "Checked In Done Already.");
+            else
+                _logger.LogInformation("{method}.{class}.{message}", nameof(CheckIfCheckedInDone), nameof(AttendanceService), "Please checkin your todays attendance");
+            return result;
+        }
     }
 }

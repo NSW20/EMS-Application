@@ -15,5 +15,6 @@ namespace EMS_Core.ServiceContracts
         Task<bool> DeleteEmployee(int empId, CancellationToken token);
         Task<AppUser> GetUser(string userId);
         Task<IEnumerable<AppUser>> GetAllUsers();
+
     }
 }

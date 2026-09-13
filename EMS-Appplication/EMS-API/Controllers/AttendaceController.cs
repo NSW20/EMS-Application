@@ -24,10 +24,10 @@ namespace EMS_API.Controllers
             this.memoryCache = memoryCache;
         }
 
-        [HttpGet]
+        [HttpGet("{employeeId?}")]
         [Authorize]
         [EnableRateLimiting("rateLimiter")]
-        public async Task<ActionResult<APIResponseWrapper<IEnumerable<AttendanceDTO>>>> GetAllAttendace(CancellationToken token)
+        public async Task<ActionResult<APIResponseWrapper<IEnumerable<AttendanceDTO>>>> GetAllAttendace([FromRoute]int employeeId,CancellationToken token)
         {
             _logger.LogInformation("{controller}.{Method}.{message}", nameof(AttendaceController), nameof(GetAllAttendace), "Request received to fetch all the attendance");
             if (memoryCache.TryGetValue("cached", out IEnumerable<AttendanceDTO> attendace))
@@ -44,7 +44,15 @@ namespace EMS_API.Controllers
             await semaphoreSlim.WaitAsync(token);
             try
             {
-                var result = await attendaceService.GetAllAttendance(token);
+                IEnumerable<AttendanceDTO> result = Enumerable.Empty<AttendanceDTO>();
+                if (User.IsInRole("Admin"))
+                {
+                    result = await attendaceService.GetAllAttendance(token);
+                }
+                else
+                {
+                    result = await attendaceService.GetAllAttendanceForAnEmployee(employeeId, token);
+                }
                 var memoryEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(1)).SetSlidingExpiration(TimeSpan.FromMinutes(10));
                 memoryCache.Set("cached", result, memoryEntryOptions);
                 _logger.LogInformation("{controller}.{Method}.{message}", nameof(AttendaceController), nameof(GetAllAttendace), "Attendance cached in memory");
@@ -95,6 +103,17 @@ namespace EMS_API.Controllers
         public async Task<ActionResult<APIResponseWrapper<AttendanceDTO>>> AddAttendace([FromBody] AttendanceAddDTO attendaceAddDTO, CancellationToken token)
         {
             _logger.LogInformation("{controller}.{Method}.{message}", nameof(AttendaceController), nameof(AddAttendace), "Request received to apply attendace");
+            var isCheckedIn = await attendaceService.CheckIfCheckedInDone(attendaceAddDTO.Date,attendaceAddDTO.EmployeeId, token);
+            if (isCheckedIn)
+            {
+                return StatusCode(StatusCodes.Status200OK, new APIResponseWrapper<AttendanceDTO>
+                {
+                    Data = null,
+                    Message = "You have allready checked in todays attendance.",
+                    StatusCode = StatusCodes.Status200OK
+
+                });
+            }
             var result = await attendaceService.ApplyAttendanceAsync(attendaceAddDTO, token);
             if (result is null)
             {

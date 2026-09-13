@@ -173,7 +173,7 @@ namespace EMS_API.Controllers
             });
         }
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Employee")]
         [EnableRateLimiting("rateLimiter")]
         public async Task<ActionResult<APIResponseWrapper<AppUser>>> GetUserDetails([FromQuery] string userId)
         {
