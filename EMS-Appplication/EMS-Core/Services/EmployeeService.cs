@@ -140,6 +140,26 @@ namespace EMS_Core.Services
                 return result;
             }
         }
+        public async Task<AppUser> GetUserByUserId(string userId)
+        {
+            _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUserByUserId), "Find user details");
+            if (userId is null)
+            {
+                _logger.LogError("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUserByUserId), "Please enter a valid user Id");
+                throw new ArgumentException("Please enter a valid employee Id", nameof(userId));
+            }
+            var result = await employeeRepository.GetUserByUserId(userId);
+            if (result == null)
+            {
+                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUserByUserId), "No records found");
+                return new AppUser();
+            }
+            else
+            {
+                _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetUserByUserId), "User details has been fetched successfully");
+                return result;
+            }
+        }
         public async Task<IEnumerable<AppUser>> GetAllUsers()
         {
             _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetAllUsers), "Get All Users Details");

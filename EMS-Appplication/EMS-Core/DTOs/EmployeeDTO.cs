@@ -18,6 +18,7 @@ namespace EMS_Core.DTOs
         public decimal? Salary { get; set; }
         public string? Status { get; set; }
         public string? UserId { get; set; }
+        public int? ManagerId { get; set; }
     }
     public class EmployeeAddDTO
     {
@@ -30,5 +31,6 @@ namespace EMS_Core.DTOs
         public decimal? Salary { get; set; }
         public string? Status { get; set; }
         public string? UserId { get; set; }
+        public int? ManagerId { get; set; }
     }
 }

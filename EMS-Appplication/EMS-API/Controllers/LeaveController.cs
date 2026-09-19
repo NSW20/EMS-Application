@@ -120,7 +120,7 @@ namespace EMS_API.Controllers
 
         [HttpPost]
         [EnableRateLimiting("rateLimiter")]
-        [Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<ActionResult<APIResponseWrapper<LeaveDTO>>> AddNewLeave([FromBody] LeaveAddDTO leaveAdd, CancellationToken token)
         {
             _memoryCache.Remove("cacheLeaves");

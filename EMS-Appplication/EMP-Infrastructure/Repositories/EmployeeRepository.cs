@@ -73,7 +73,13 @@ namespace EMP_Infrastructure.Repositories
         public async Task<AppUser> GetUser(string userId)
         {
             _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeRepository), nameof(GetUser), "FindUserId");
-            var result=await eMSDbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var result=await eMSDbContext.Users.FirstOrDefaultAsync(x => x.Email == userId);
+            return result;
+        }
+        public async Task<AppUser> GetUserByUserId(string userId)
+        {
+            _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeRepository), nameof(GetUser), "FindUserId");
+            var result = await eMSDbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
             return result;
         }
         public async Task<IEnumerable<AppUser>> GetAllUsers()

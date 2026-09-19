@@ -48,6 +48,7 @@ namespace EMP_Infrastructure.SqlOperation
                 HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.Restrict);
             emp.HasOne(x => x.Designation).WithMany(x => x.Employees).
             HasForeignKey(x => x.DesignationId).OnDelete(DeleteBehavior.Restrict);
+            emp.HasOne(x => x.Manager).WithMany(x=>x.Subordinates).HasForeignKey(x => x.ManagerId).OnDelete(DeleteBehavior.Restrict);
         }
         public void ConfigureDesignation(ModelBuilder builder)
         {

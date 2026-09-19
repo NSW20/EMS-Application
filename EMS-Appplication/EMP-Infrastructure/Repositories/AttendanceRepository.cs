@@ -46,7 +46,7 @@ namespace EMP_Infrastructure.Repositories
         public async Task<IEnumerable<Attendance>> GetAllAttendance(CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.{message}", nameof(GetAllAttendance), nameof(AttendanceRepository), "Request Recieved to fetch all attendace records");
-            var result= await _context.Attendances.ToListAsync(token);
+            var result= await _context.Attendances.OrderBy(x=>x.Date).ToListAsync(token);
             return result;
         }
 

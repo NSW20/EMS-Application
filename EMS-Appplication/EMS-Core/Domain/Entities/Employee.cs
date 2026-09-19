@@ -21,6 +21,9 @@ namespace EMS_Core.Domain.Entities
         public EmployeeStatus? Status { get; set; }
         public string? UserId { get; set; }
         public AppUser? User { get; set; }
+        public int? ManagerId { get; set; }
+        public Employee? Manager { get; set; }
+        public ICollection<Employee>? Subordinates { get; set; } = new List<Employee>();
         public ICollection<Attendance>? Attendances { get; set; } = new List<Attendance>();
         public ICollection<Leave>? Leaves { get; set; } = new List<Leave>();
     }

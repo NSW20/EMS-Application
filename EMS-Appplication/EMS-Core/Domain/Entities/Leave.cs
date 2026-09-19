@@ -16,6 +16,7 @@ namespace EMS_Core.Domain.Entities
         public string? Reason { get; set; }
         public LeaveType LeaveType { get; set; }
         public LeaveStatus Status { get; set; }
+
         public string? ApprovedBy { get; set; }
     }
 }

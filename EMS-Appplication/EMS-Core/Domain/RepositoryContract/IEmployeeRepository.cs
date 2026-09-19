@@ -14,6 +14,7 @@ namespace EMS_Core.Domain.RepositoryContract
         Task<Employee> UpdateEmployee(Employee employee, CancellationToken token);
         Task<bool> DeleteEmployee(int empId, CancellationToken token);
         Task<AppUser> GetUser(string userId);
+        Task<AppUser> GetUserByUserId(string userId);
         Task<IEnumerable<AppUser>> GetAllUsers();
     }
 }

@@ -14,8 +14,8 @@ namespace EMS_Core.DTOs
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
         public string? Reason { get; set; }
-        public LeaveType LeaveType { get; set; }
-        public LeaveStatus Status { get; set; }
+        public LeaveType? LeaveType { get; set; }
+        public LeaveStatus? Status { get; set; }
         public string? ApprovedBy { get; set; }
     }
     public class LeaveAddDTO
@@ -24,8 +24,8 @@ namespace EMS_Core.DTOs
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
         public string? Reason { get; set; }
-        public LeaveType LeaveType { get; set; }
-        public LeaveStatus Status { get; set; }
+        public LeaveType? LeaveType { get; set; }
+        public LeaveStatus? Status { get; set; }
         public string? ApprovedBy { get; set; }
     }
 }
