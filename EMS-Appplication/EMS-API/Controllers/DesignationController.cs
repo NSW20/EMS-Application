@@ -57,6 +57,46 @@ namespace EMS_API.Controllers
                 _cacheLock.Release();
             }
         }
+
+        [HttpGet]
+        [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles="Admin")]
+        public async Task<ActionResult<IEnumerable<DesignationDTO>>> GetAllDesignationsWithPaggination(CancellationToken token,string? searchText,string sortOrder,string sortColumn,int pageNumber,int pageSize)
+        {
+            _logger.LogInformation("{Method}.{controller}.{message}",
+          nameof(GetAllDesignations), nameof(DesignationController), "Request received for fetching all the designations");
+            var memoryCacheValue = $"departments_{searchText}_{sortOrder}_{sortColumn}_{pageNumber}_{pageSize}";
+            if (memoryCache.TryGetValue(memoryCacheValue, out IEnumerable<DesignationDTO> designations))
+            {
+                return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<DesignationDTO>>
+                {
+                    Data = designations,
+                    Message = "Designations fetched from cache",
+                    StatusCode = 200,
+                    TotalPage = pageSize
+                });
+            }
+            await _cacheLock.WaitAsync(token);
+            try
+            {
+                MemoryCacheEntryOptions memory = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(1)).
+                    SetSlidingExpiration(TimeSpan.FromMinutes(10));
+                var (result,totalPage) = await _designationService.GetPagginatedDesignationAsync(token, searchText, sortOrder, sortColumn, pageNumber, pageSize);
+                memoryCache.Set(memoryCacheValue, result, memory);
+                return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<DesignationDTO>>
+                {
+                    Data = result,
+                    Message = "Designations fetched from cache",
+                    StatusCode = 200,
+                    TotalPage = totalPage
+                });
+            }
+            finally
+            {
+                _cacheLock.Release();
+            }
+        }
+
         [HttpGet]
         [EnableRateLimiting("rateLimiter")]
         [Authorize(Roles = "Admin")]

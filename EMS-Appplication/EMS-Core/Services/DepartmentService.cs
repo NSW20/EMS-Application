@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using ClosedXML;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using EMS_Core.Domain.Entities;
 using EMS_Core.Domain.RepositoryContract;
 using EMS_Core.DTOs;
@@ -7,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ClosedXML;
 
 namespace EMS_Core.Services
 {
@@ -71,6 +73,14 @@ namespace EMS_Core.Services
             _logger.LogInformation("{method}.{class}.Department fetched successfully", nameof(GetAllDepartmentAsync), nameof(DepartmentService));
             var resultToBeReturned = _mapper.Map<IEnumerable<DepartmentDTO>>(result);
             return resultToBeReturned;
+        }
+
+        public async Task<(IEnumerable<DepartmentDTO> depts, int pageSize)> GetAllDepartmentsWithPaginationAsync(CancellationToken token, string? searchText, string sortOrder = "ASC", int pageSize = 10, int pageNumber = 1, string sortColumns = "Name")
+        {
+            _logger.LogInformation("{method}.{class}.Request received for Fetch all the department", nameof(GetAllDepartmentsWithPaginationAsync), nameof(DepartmentService));
+            var (result, totalPage) = await _departmentRepository.GetAllDepartmentsWithPaginationAsync(token, searchText, sortOrder, pageSize, pageNumber, sortColumns);
+            return (_mapper.Map<IEnumerable<DepartmentDTO>>(result), totalPage);
+
         }
 
         public async Task<DepartmentDTO> GetDepartmentAsync(int id, CancellationToken token)

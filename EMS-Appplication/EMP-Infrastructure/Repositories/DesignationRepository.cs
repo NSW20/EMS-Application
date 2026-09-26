@@ -42,6 +42,28 @@ namespace EMP_Infrastructure.Repositories
             return await eMSDbContext.Designations.ToListAsync(token);
         }
 
+        public async Task<(IEnumerable<Designation>, int)> GetPagginatedDesignationAsync(CancellationToken token, string? searchText, string sortOrder = "ASC", string sortColumn = "Title", int pageNumber = 1, int pageSize = 10)
+        {
+            logger.LogInformation("{method}.{class}.Requested receive to fetch all designation", nameof(GetPagginatedDesignationAsync), nameof(DesignationRepository));
+            var query = eMSDbContext.Designations.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x => x.Title.Contains(searchText));
+            }
+            query = sortColumn.ToLower() switch
+            {
+                "title" => sortOrder.Equals("DESC", StringComparison.OrdinalIgnoreCase)
+                ? query.OrderByDescending(x => x.Title) : query.OrderBy(x => x.Title),
+                "designationid" => sortOrder.Equals("DESC", StringComparison.OrdinalIgnoreCase) ?
+                query.OrderByDescending(x => x.DesignationId) : query.OrderBy(x => x.DesignationId),
+                _=>query.OrderBy(x=>x.Title)
+            };
+            var totalColumnCount = await query.CountAsync();
+            var paginatedResult = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (paginatedResult, totalColumnCount);
+           
+        }
+
         public async Task<Designation> GetDesignationByIdAsync(int id, CancellationToken token)
         {
             logger.LogInformation("{method}.{class}.Requested receive to fetch a designation", nameof(GetDesignationByIdAsync), nameof(DesignationRepository));

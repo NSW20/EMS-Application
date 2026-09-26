@@ -8,6 +8,8 @@ namespace EMS_Core.ServiceContracts
     public interface IDepartmentService
     {
         Task<IEnumerable<DepartmentDTO>> GetAllDepartmentAsync(CancellationToken token);
+        Task<(IEnumerable<DepartmentDTO> depts,int pageSize)> GetAllDepartmentsWithPaginationAsync(CancellationToken token, string? searchText, string sortOrder = "ASC", int pageSize = 10, int pageNumber = 1, string sortColumns = "Name");
+
         Task<DepartmentDTO> GetDepartmentAsync(int id, CancellationToken token);
         Task<DepartmentDTO> AddDepartment(DepartmentAddDTO departmentAddDTO, CancellationToken token);
 

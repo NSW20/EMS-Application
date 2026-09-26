@@ -99,6 +99,13 @@ namespace EMS_Core.Services
             return resultToBeReturned;
         }
 
+        public async Task<(IEnumerable<DesignationDTO>, int)> GetPagginatedDesignationAsync(CancellationToken token, string? searchText, string sortOrder = "ASC", string sortColumn = "Title", int pageNumber = 1, int pageSize = 10)
+        {
+            _logger.LogInformation("{method}.{class}.Requested receive to fetch all the designation", nameof(GetPagginatedDesignationAsync), nameof(DesignationService));
+            var (result,totalCount) = await _designationRepository.GetPagginatedDesignationAsync(token, searchText, sortOrder, sortColumn, pageNumber, pageSize);
+            return (_mapper.Map<IEnumerable<DesignationDTO>>(result), totalCount);
+        }
+
         public async Task<DesignationDTO> UpdateDesignation(DesignationDTO designationUpdateDTO, int designationId, CancellationToken token)
         {
             _logger.LogInformation("{method}.{class}.Requested receive to update a designation", nameof(UpdateDesignation), nameof(DesignationService));

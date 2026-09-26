@@ -1,6 +1,7 @@
 ﻿using EMP_Infrastructure.SqlOperation;
 using EMS_Core.Domain.Entities;
 using EMS_Core.Domain.RepositoryContract;
+using EMS_Core.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -59,6 +60,31 @@ namespace EMP_Infrastructure.Repositories
              _context.Departments.Update(departmentToUpdate);
             await _context.SaveChangesAsync(token);
             return departmentToUpdate;
+        }
+
+        public async Task<(IEnumerable<Department> department, int pagenumber)> GetAllDepartmentsWithPaginationAsync(CancellationToken token, string? searchText, string sortOrder, int pageSize, int pageNumber, string sortColumns)
+        {
+            _logger.LogInformation("{method}.{class}.Requested Recived to fetch a department", nameof(GetAllDepartmentsWithPaginationAsync), nameof(DepartmentRepository));
+            var query = _context.Departments.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x => x.Name.Contains(searchText));
+            }
+
+            query = sortColumns.ToLower() switch
+            {
+                "name" => sortOrder.Equals("DESC", StringComparison.OrdinalIgnoreCase)
+                 ? query.OrderByDescending(x => x.Name)
+                 : query.OrderBy(x => x.Name),
+                "id" => sortOrder.Equals("DESC", StringComparison.OrdinalIgnoreCase)
+                    ? query.OrderByDescending(x => x.DepartmentId)
+                    : query.OrderBy(x => x.DepartmentId),
+                _ => query.OrderBy(x => x.Name)
+
+            };
+            var totalCount = await query.CountAsync();
+            var paginatedItem = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(token);
+            return (paginatedItem, totalCount);
         }
     }
 }

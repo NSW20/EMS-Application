@@ -63,6 +63,63 @@ namespace EMS_API.Controllers
                 semaphoreSlim.Release();
             }
         }
+
+
+        [HttpGet]
+        [EnableRateLimiting("rateLimiter")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<APIResponseWrapperPagginated<List<DepartmentDTO>>>> GetAllDepartmentPagginated(
+            CancellationToken token,
+            string? searchText,
+            string sortOrder = "ASC",
+            int pageSize = 10,
+            int pageNumber = 1,
+            string sortColumns = "Name")
+        {
+            _logger.LogInformation("{controller}.{method}.{message}", nameof(DepartmentController), nameof(GetAllDepartmentPagginated), "Request received to fetch all the departments");
+
+            var cacheKey = $"departments_{searchText}_{sortOrder}_{sortColumns}_{pageNumber}_{pageSize}";
+
+            if (memoryCache.TryGetValue(cacheKey, out IEnumerable<DepartmentDTO>? cachedResult))
+            {
+                return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<DepartmentDTO>>()
+                {
+                    StatusCode = 200,
+                    Message = "Departments fetched from cached",
+                    Data = cachedResult,
+                    TotalPage = pageSize
+                });
+            }
+
+            await semaphoreSlim.WaitAsync(token);
+            try
+            {
+                int pageSizes = 0;
+                if (!memoryCache.TryGetValue(cacheKey, out IEnumerable<DepartmentDTO>? department))
+                {
+                    var memoryOption = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromHours(1))
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(10));
+
+                    (department, pageSizes) = await departmentService.GetAllDepartmentsWithPaginationAsync(
+                        token, searchText, sortOrder, pageSize, pageNumber, sortColumns);
+
+                    memoryCache.Set(cacheKey, department, memoryOption);
+                }
+
+                return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<DepartmentDTO>>()
+                {
+                    StatusCode = 200,
+                    Message = "Departments fetched from cached",
+                    Data = department,
+                    TotalPage = pageSize
+                });
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
+        }
         [HttpGet]
         [EnableRateLimiting("rateLimiter")]
         [Authorize(Roles = "Admin")]
