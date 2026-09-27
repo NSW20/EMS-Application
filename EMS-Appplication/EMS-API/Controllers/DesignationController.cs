@@ -61,19 +61,19 @@ namespace EMS_API.Controllers
         [HttpGet]
         [EnableRateLimiting("rateLimiter")]
         [Authorize(Roles="Admin")]
-        public async Task<ActionResult<IEnumerable<DesignationDTO>>> GetAllDesignationsWithPaggination(CancellationToken token,string? searchText,string sortOrder,string sortColumn,int pageNumber,int pageSize)
+        public async Task<ActionResult<APIResponseWrapperPagginated<IEnumerable<DesignationDTO>>>> GetAllDesignationsWithPaggination(CancellationToken token,string? searchText,string sortOrder,string sortColumn,int pageNumber,int pageSize)
         {
             _logger.LogInformation("{Method}.{controller}.{message}",
           nameof(GetAllDesignations), nameof(DesignationController), "Request received for fetching all the designations");
             var memoryCacheValue = $"departments_{searchText}_{sortOrder}_{sortColumn}_{pageNumber}_{pageSize}";
-            if (memoryCache.TryGetValue(memoryCacheValue, out IEnumerable<DesignationDTO> designations))
+            if (memoryCache.TryGetValue(memoryCacheValue, out CachePagginatorDTO<DesignationDTO>? cachePagginatorDTO))
             {
                 return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<DesignationDTO>>
                 {
-                    Data = designations,
+                    Data = cachePagginatorDTO!.Data,
                     Message = "Designations fetched from cache",
                     StatusCode = 200,
-                    TotalPage = pageSize
+                    TotalPage = cachePagginatorDTO.TotalItemsCount
                 });
             }
             await _cacheLock.WaitAsync(token);
@@ -81,14 +81,20 @@ namespace EMS_API.Controllers
             {
                 MemoryCacheEntryOptions memory = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(1)).
                     SetSlidingExpiration(TimeSpan.FromMinutes(10));
-                var (result,totalPage) = await _designationService.GetPagginatedDesignationAsync(token, searchText, sortOrder, sortColumn, pageNumber, pageSize);
-                memoryCache.Set(memoryCacheValue, result, memory);
+                 var (result,totalPages) = await _designationService.GetPagginatedDesignationAsync(token, searchText, sortOrder, sortColumn, pageNumber, pageSize);
+               
+                var cachePaginatorDTO = new CachePagginatorDTO<DesignationDTO>
+                {
+                    Data = result,
+                    TotalItemsCount = totalPages
+                };
+                memoryCache.Set(memoryCacheValue, cachePaginatorDTO, memory);
                 return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<DesignationDTO>>
                 {
                     Data = result,
                     Message = "Designations fetched from cache",
                     StatusCode = 200,
-                    TotalPage = totalPage
+                    TotalPage = totalPages
                 });
             }
             finally

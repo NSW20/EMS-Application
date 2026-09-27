@@ -80,14 +80,14 @@ namespace EMS_API.Controllers
 
             var cacheKey = $"departments_{searchText}_{sortOrder}_{sortColumns}_{pageNumber}_{pageSize}";
 
-            if (memoryCache.TryGetValue(cacheKey, out IEnumerable<DepartmentDTO>? cachedResult))
+            if (memoryCache.TryGetValue(cacheKey, out CachePagginatorDTO<DepartmentDTO>? cachedResult))
             {
                 return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<DepartmentDTO>>()
                 {
                     StatusCode = 200,
                     Message = "Departments fetched from cached",
-                    Data = cachedResult,
-                    TotalPage = pageSize
+                    Data = cachedResult.Data,
+                    TotalPage = cachedResult.TotalItemsCount
                 });
             }
 
@@ -103,8 +103,12 @@ namespace EMS_API.Controllers
 
                     (department, pageSizes) = await departmentService.GetAllDepartmentsWithPaginationAsync(
                         token, searchText, sortOrder, pageSize, pageNumber, sortColumns);
-
-                    memoryCache.Set(cacheKey, department, memoryOption);
+                    var cachedDTO = new CachePagginatorDTO<DepartmentDTO>
+                    {
+                        Data = department,
+                        TotalItemsCount = pageSizes
+                    };
+                    memoryCache.Set(cacheKey, cachedDTO, memoryOption);
                 }
 
                 return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<DepartmentDTO>>()

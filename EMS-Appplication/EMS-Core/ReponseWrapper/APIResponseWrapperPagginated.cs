@@ -10,6 +10,5 @@ namespace EMS_Core.ReponseWrapper
         public string? Message { get; set; }
         public int TotalPage { get; set; }
         public T? Data { get; set; }
-        public List<string>? Errors { get; set; }
     }
 }
