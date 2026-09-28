@@ -10,6 +10,7 @@ namespace EMS_Core.ServiceContracts
     {
         Task<IEnumerable<EmployeeDTO>> GetAllEmployees(CancellationToken token);
         Task<EmployeeDTO> GetEmployeeByEmail(CancellationToken token, string email);
+        Task<(IEnumerable<EmployeeDTO>, int)> GetAllEmployeesWithPagination(CancellationToken token, string? searchText, int pageNumber = 1, int pageSize = 10, string sortColumn = "FullName", string sortOrder = "ASC");
         Task<EmployeeDTO> AddEmployee(EmployeeAddDTO employee, CancellationToken token);
         Task<EmployeeDTO> UpdateEmployee(EmployeeDTO employee, CancellationToken token);
         Task<bool> DeleteEmployee(int empId, CancellationToken token);

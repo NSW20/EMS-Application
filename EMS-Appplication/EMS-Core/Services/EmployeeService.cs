@@ -176,5 +176,14 @@ namespace EMS_Core.Services
                 return result;
             }
         }
+        public async Task<(IEnumerable<EmployeeDTO>, int)> GetAllEmployeesWithPagination(CancellationToken token, string? searchText, int pageNumber = 1,
+            int pageSize = 10, string sortColumn = "FullName", string sortOrder = "ASC")
+        {
+            _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeService), nameof(GetAllEmployeesWithPagination), "Get All Users Details");
+            var (result, totalItems) = await employeeRepository.GetAllEmployeesWithPagination(token, searchText, pageNumber, pageSize, sortColumn, sortOrder);
+            var resultToBeSent = _mapper.Map<IEnumerable<EmployeeDTO>>(result);
+            return (resultToBeSent, totalItems);
+        }
+
     }
 }

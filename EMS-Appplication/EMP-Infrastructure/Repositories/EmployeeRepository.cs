@@ -88,5 +88,26 @@ namespace EMP_Infrastructure.Repositories
             var result = await eMSDbContext.Users.ToListAsync();
             return result;
         }
+        public async Task<(IEnumerable<Employee>, int)> GetAllEmployeesWithPagination(CancellationToken token, string? searchText, int pageNumber = 1,
+            int pageSize = 10, string sortColumn = "FullName", string sortOrder = "ASC")
+        {
+            _logger.LogInformation("{class}.{method}.{message}", nameof(EmployeeRepository), nameof(GetAllEmployeesWithPagination), "Get All Users");
+            var query = eMSDbContext.Employees.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x => x.FullName.Contains(searchText)||  x.Email.Contains(searchText));
+            }
+            query = sortColumn.ToLower() switch
+            {
+                "fullname" => sortOrder.Equals("DESC",StringComparison.OrdinalIgnoreCase)?query.OrderByDescending(x=>x.FullName):query.OrderBy(x=>x.FullName),
+                "email" => sortOrder.Equals("DESC", StringComparison.OrdinalIgnoreCase) ? query.OrderByDescending(x => x.Email) : query.OrderBy(x => x.Email),
+                _ => query.OrderBy(x => x.FullName)
+            };
+            int totalItems = await query.CountAsync();
+
+            var paginatedResult = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (paginatedResult, totalItems);
+        }
     }
 }

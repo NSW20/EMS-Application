@@ -251,6 +251,40 @@ namespace EMS_API.Controllers
             });
         }
 
+        [HttpGet]
+        [Authorize(Roles ="Admin")]
+        [EnableRateLimiting("rateLimiter")]
+        public async Task<ActionResult<APIResponseWrapperPagginated<IEnumerable<EmployeeDTO>>>> GetAllEmployeesWithPagginations(CancellationToken token, string? searchText, int pageNumber = 1,
+            int pageSize = 10, string sortColumn = "FullName", string sortOrder = "ASC")
+        {
+            _logger.LogInformation("{controller}.{Method}.{message}", nameof(EmployeeController), nameof(GetAllEmployeesWithPagginations), "Request received to fetch user details");
+            string cacheKey = $"Cache_{pageNumber}_{pageSize}_{sortColumn}_{sortOrder}_{searchText}";
+            if(memoryCache.TryGetValue(cacheKey,out CachePagginatorDTO<EmployeeDTO> employee))
+            {
+                return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<EmployeeDTO>>
+                {
+                    Data = employee.Data,
+                    StatusCode = 200,
+                    Message = "All employees have been fetched from cache",
+                    TotalPage = employee.TotalItemsCount
+                });
+            }
+            await semaphoreSlim.WaitAsync(token);
+            var memoryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(1)).SetSlidingExpiration(TimeSpan.FromMinutes(10));
+            var (result, totalCount) = await employeeService.GetAllEmployeesWithPagination(token, searchText, pageNumber, pageSize, sortColumn, sortOrder);
+            var cache = new CachePagginatorDTO<EmployeeDTO>()
+            {
+                Data = result,
+                TotalItemsCount = totalCount
+            };
+            memoryCache.Set(cacheKey, cache, memoryOptions);
+            return StatusCode(StatusCodes.Status200OK, new APIResponseWrapperPagginated<IEnumerable<EmployeeDTO>>{
+                Data = cache.Data,
+                TotalPage = cache.TotalItemsCount,
+                StatusCode = 200,
+                Message = "All employees have been fetched"
+            });
+        }
 
     }
 }
